@@ -15,6 +15,7 @@ Wait for: "Running on http://localhost:5001"
 
 2. TERMINAL 2 - Start Frontend
 ───────────────────────────────
+
 cd SIZDS_PRO
 python3 -m http.server 8000
 
