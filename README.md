@@ -1,6 +1,8 @@
 **SIZDS PRO – Professional Zero-Day Detection Dashboard**
 
 QUICK START
+
+
 Terminal 1 – Start Backend API
 cd SIZDS_PRO
 python3 -m pip install -r requirements.txt
