@@ -1,220 +1,184 @@
-================================================================================
-SIZDS PRO - Professional Zero-Day Detection Dashboard
-================================================================================
+**SIZDS PRO – Professional Zero-Day Detection Dashboard**
 
 QUICK START
-═════════════════════════════════════════════════════════════════════════════
-
-1. TERMINAL 1 - Start Backend API
-────────────────────────────────────
+Terminal 1 – Start Backend API
 cd SIZDS_PRO
 python3 -m pip install -r requirements.txt
 python3 backend_app.py
 
-Wait for: "Running on http://localhost:5001"
+Wait for:
 
-2. TERMINAL 2 - Start Frontend
-───────────────────────────────
+Running on http://localhost:5001
 
+Terminal 2 – Start Frontend
 cd SIZDS_PRO
 python3 -m http.server 8000
 
-Wait for: "Serving HTTP on 0.0.0.0 port 8000"
+Wait for:
 
-3. OPEN BROWSER
-─────────────────
-Visit: http://localhost:8000
+Serving HTTP on 0.0.0.0 port 8000
 
-That's it! Dashboard is live.
+Open Browser
 
+Visit:
+
+http://localhost:8000
+
+Dashboard is now live.
 
 FEATURES
-═════════════════════════════════════════════════════════════════════════════
+Three Professional Dashboards
+1. Overview (System Monitoring)
 
-THREE PROFESSIONAL DASHBOARDS:
+• Real-time threat detection
+• 7 behavioral intent classifiers
+• AI/ML model performance across 13 models
+• Recent threats table
+• Attack intent distribution
+• Model accuracy comparison
 
-1. OVERVIEW (System Monitoring)
-   ✓ Real-time threat detection
-   ✓ 7 behavioral intent classifiers
-   ✓ AI/ML model performance (13 models)
-   ✓ Recent threats table
-   ✓ Attack intent distribution
-   ✓ Model accuracy comparison
+2. Processes (Isolation & Control)
 
-2. PROCESSES (Isolation & Control)
-   ✓ Monitor all running processes
-   ✓ Risk level assessment
-   ✓ Isolate malicious processes
-   ✓ System resource monitoring (CPU/Memory)
-   ✓ Critical threat alerts
-   ✓ One-click process isolation
+• Monitor all running processes
+• Risk level assessment
+• Isolate malicious processes
+• CPU and memory monitoring
+• Critical threat alerts
+• One-click process isolation
 
-3. ANALYTICS (Intelligence)
-   ✓ Detection rate trends (30 days)
-   ✓ False positive analysis
-   ✓ Response time metrics
-   ✓ Top attack types breakdown
-   ✓ Model accuracy comparison
-   ✓ Threat analysis charts
+3. Analytics (Intelligence)
 
+• Detection rate trends over 30 days
+• False positive analysis
+• Response time metrics
+• Top attack type breakdown
+• Model accuracy comparison
+• Threat analysis charts
 
-HOW IT SOLVES THE 3 RESEARCH LIMITATIONS
-═════════════════════════════════════════════════════════════════════════════
+HOW IT SOLVES RESEARCH LIMITATIONS
+Limitation 1: Detecting Zero-Day Attacks
+Solution: Behavioral Intent Detection
 
-LIMITATION 1: Can't Detect Zero-Day Attacks
-────────────────────────────────────────────
-SOLUTION: Behavioral Intent Detection
-  • 7 Random Forest classifiers detect WHAT attacker is doing
-  • Not dependent on malware signatures
-  • Works on unknown malware variants
-  • Example: Detects ransomware by file access behavior, not specific code
+• Seven Random Forest classifiers identify attacker intent
+• Independent of malware signatures
+• Detects unknown malware variants
+• Identifies ransomware through file access behavior rather than code signatures
 
-LIMITATION 2: Black Box - Can't Explain Detections
-───────────────────────────────────────────────────
-SOLUTION: Full Explainability System
-  • Click any threat → See full details
-  • Shows which features triggered alert
-  • Shows which models detected it
-  • Shows Z-scores proving abnormality
-  • Shows WHY it's malicious in plain language
+Limitation 2: Lack of Explainability
+Solution: Full Explainability System
 
-LIMITATION 3: No Real-Time Blocking
-──────────────────────────────────────
-SOLUTION: Immediate Process Isolation
-  • Processes page shows all running processes
-  • One-click isolation of malicious processes
-  • Blocks network access immediately
-  • Prevents data exfiltration
-  • Logs all actions with case numbers
+• Detailed threat information on click
+• Displays triggering features
+• Shows contributing models
+• Provides anomaly Z-scores
+• Explains malicious behavior in plain language
 
+Limitation 3: No Real-Time Blocking
+Solution: Immediate Process Isolation
+
+• Displays all active processes
+• Instant isolation of suspicious processes
+• Immediate network blocking
+• Prevents data exfiltration
+• Maintains detailed action logs with case IDs
 
 DASHBOARD DESIGN
-═════════════════════════════════════════════════════════════════════════════
+Minimalist Cybersecurity Theme
 
-MINIMALIST CYBERSECURITY THEME:
-  ✓ Black background (#000000)
-  ✓ Dark gray accents (#1a1a1a, #2a2a2a)
-  ✓ White text for readability
-  ✓ Minimal red/green/blue (only when critical)
-  ✓ Professional, clean design
-  ✓ Inspired by OpenAI interface
+• Black background
+• Dark gray accents
+• White text for readability
+• Limited use of red, green, and blue
+• Clean and professional appearance
+• Inspired by modern AI interfaces
 
-NO BRIGHT COLORS - Just what's needed:
-  • Red: Critical threats only
-  • Green: Success/safe processes
-  • Blue: Informational metrics
-  • Gray: Normal/neutral states
+Color Usage
 
+• Red for critical threats
+• Green for safe operations
+• Blue for informational metrics
+• Gray for neutral states
 
 DEMONSTRATION FLOW
-═════════════════════════════════════════════════════════════════════════════
+Overview Tab
 
-SHOW YOUR PROFESSORS:
+• Display real-time threats
+• Open Exfiltration alerts to show explanations
+• Open Ransomware alerts to show behavioral intent detection
+• Open Reconnaissance alerts to demonstrate zero-day detection
 
-1. OVERVIEW TAB
-   "Here are real-time threats being detected"
-   - Click on Exfiltration → Shows full explanation
-   - Click on Ransomware → Shows behavioral intent
-   - Click on Reconnaissance → Shows zero-day detection
+Processes Tab
 
-2. PROCESSES TAB
-   "Here we can isolate malicious processes"
-   - Show critical processes (ransomware.exe, malware.exe)
-   - Click "Isolate Now" → Process immediately isolated
-   - Show system resources being freed
+• Display critical processes such as ransomware.exe and malware.exe
+• Demonstrate process isolation
+• Show resource recovery after isolation
 
-3. ANALYTICS TAB
-   "Here's the system intelligence"
-   - Show 87% detection rate
-   - Show 2.3% false positive rate
-   - Show model accuracy (97% ensemble)
+Analytics Tab
 
+• Present detection rate of 87%
+• Present false positive rate of 2.3%
+• Present model accuracy of 97%
 
-KEY METRICS TO HIGHLIGHT
-═════════════════════════════════════════════════════════════════════════════
-
-WHAT IMPRESSES PROFESSORS:
-
+KEY METRICS
 Detection Rate: 87%
-  → Works on zero-day malware (behavioral analysis)
+
+• Effective against zero-day malware through behavioral analysis
 
 False Positive Rate: 2.3%
-  → 8-model ensemble consensus reduces false alerts
 
-Response Time: 34ms
-  → Real-time threat blocking
+• Reduced using ensemble model consensus
+
+Response Time: 34 ms
+
+• Enables real-time threat response
 
 Model Accuracy: 97%
-  → Ensemble of 13 models outperforms single approach
 
-Zero-Day Detection: ✓
-  → Detects unknown malware by behavior, not signature
+• Achieved using a 13-model ensemble
 
+Zero-Day Detection
+
+• Detects previously unseen malware through behavioral patterns
 
 TECHNICAL DETAILS
-═════════════════════════════════════════════════════════════════════════════
+Frontend
 
-FRONTEND:
-  • index.html - Professional dashboard UI
-  • app.js - JavaScript logic & API integration
-  • Fully responsive design
-  • No external dependencies (pure HTML/CSS/JS)
+• index.html for dashboard interface
+• app.js for application logic and API integration
+• Responsive design
+• Pure HTML, CSS, and JavaScript
 
-BACKEND:
-  • Flask API server (port 5001)
-  • 13 ML models integrated
-  • Real-time threat detection
-  • Process monitoring
-  • Real-time data simulation
+Backend
 
-API ENDPOINTS:
-  • /api/status - System status
-  • /api/threats - Threat list
-  • /api/processes - Process monitoring
-  • /api/isolate - Process isolation
+• Flask API server running on port 5001
+• 13 integrated machine learning models
+• Real-time threat detection engine
+• Process monitoring system
+• Real-time simulation support
 
+API Endpoints
+
+• /api/status – System status
+• /api/threats – Threat information
+• /api/processes – Process monitoring
+• /api/isolate – Process isolation
 
 TALKING POINTS
-═════════════════════════════════════════════════════════════════════════════
 
-"This system detects malware that signature-based IDS can't catch"
-  → Because it analyzes behavior, not signatures
-
-"We explain every detection fully"
-  → Show the modal - feature breakdown, model votes, Z-scores
-
-"We can isolate threats in real-time"
-  → Click Processes tab, click Isolate - immediate action
-
-"This uses advanced ensemble machine learning"
-  → 7 intent specialists + 6 validators = 13 models voting
-
-"Works on polymorphic malware"
-  → Same intent detected regardless of code changes
-
-"Professional, production-grade system"
-  → OpenAI-style design, clean code, full API
-
+• Detects malware missed by signature-based IDS solutions
+• Explains every detection with transparent reasoning
+• Supports real-time threat isolation
+• Uses advanced ensemble machine learning
+• Effective against polymorphic malware
+• Provides a professional and production-ready architecture
 
 NEXT STEPS
-═════════════════════════════════════════════════════════════════════════════
+Start the backend server
+Start the frontend server
+Explore all three dashboards
+Review threat explanations
+Demonstrate process isolation
+Present analytics and research contributions
+READY FOR PRESENTATION
 
-1. Run both backend and frontend (see Quick Start above)
-2. Navigate between three dashboards
-3. Click on threats to see explanations
-4. Click "Isolate Now" on processes to demo blocking
-5. Show analytics to professors
-6. Discuss how it solves the 3 research limitations
-
-
-YOU'RE READY
-═════════════════════════════════════════════════════════════════════════════
-
-This is a professional, presentation-ready system.
-Clean design, full functionality, real threat detection & explanation.
-
-Start the backend and open the dashboard!
-
-Any questions? Check the code comments.
-
-================================================================================
+SIZDS PRO is a professional, presentation-ready cybersecurity platform featuring behavioral threat detection, explainable AI, real-time response capabilities, and a modern dashboard interface.
