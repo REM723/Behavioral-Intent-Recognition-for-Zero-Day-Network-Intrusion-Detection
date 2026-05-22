@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIZDS - Zero-Day Detection System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --black: #000000;
+            --dark: #0d0d0d;
+            --darker: #1a1a1a;
+            --gray-900: #1f1f1f;
+            --gray-800: #2a2a2a;
+            --gray-700: #3a3a3a;
+            --gray-600: #4a4a4a;
+            --gray-500: #6a6a6a;
+            --gray-400: #8a8a8a;
+            --gray-300: #a8a8a8;
+            --gray-200: #c8c8c8;
+            --gray-100: #e5e5e5;
+            --white: #ffffff;
+            --red: #ef4444;
+            --green: #22c55e;
+            --blue: #3b82f6;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
+            background: var(--black);
+            color: var(--gray-200);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* NAVIGATION */
+        nav {
+            background: var(--dark);
+            border-bottom: 1px solid var(--gray-900);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            background: rgba(13, 13, 13, 0.8);
+        }
+
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+            color: var(--white);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links button {
+            background: none;
+            border: none;
+            color: var(--gray-400);
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: color 0.2s;
+            padding: 0.5rem 0;
+            border-bottom: 2px solid transparent;
+        }
+
+        .nav-links button:hover {
+            color: var(--white);
+        }
+
+        .nav-links button.active {
+            color: var(--white);
+            border-bottom-color: var(--white);
+        }
+
+        .status-bar {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--gray-400);
+            font-size: 0.9rem;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--green);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* MAIN CONTAINER */
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* PAGE SECTION */
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* PAGE HEADER */
+        .page-header {
+            margin-bottom: 3rem;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            font-weight: 500;
+            color: var(--white);
+            margin-bottom: 0.5rem;
+            letter-spacing: -1px;
+        }
+
+        .page-subtitle {
+            font-size: 1rem;
+            color: var(--gray-500);
+            font-weight: 400;
+        }
+
+        /* GRID */
+        .grid {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .grid-2 {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .grid-3 {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        .grid-4 {
+            grid-template-columns: repeat(4, 1fr);
+        }
+
+        /* STAT CARD */
+        .stat-card {
+            background: var(--gray-900);
+            border: 1px solid var(--gray-800);
+            border-radius: 8px;
+            padding: 1.5rem;
+            transition: all 0.2s;
+        }
+
+        .stat-card:hover {
+            border-color: var(--gray-700);
+            background: var(--gray-800);
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: var(--gray-500);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.75rem;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 600;
+            color: var(--white);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value.danger {
+            color: var(--red);
+        }
+
+        .stat-value.success {
+            color: var(--green);
+        }
+
+        .stat-change {
+            font-size: 0.875rem;
+            color: var(--gray-500);
+        }
+
+        /* CHART */
+        .chart-container {
+            background: var(--gray-900);
+            border: 1px solid var(--gray-800);
+            border-radius: 8px;
+            padding: 2rem;
+            margin-top: 1.5rem;
+        }
+
+        .chart {
+            height: 300px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-around;
+            gap: 0.5rem;
+        }
+
+        .chart-bar {
+            flex: 1;
+            background: var(--gray-700);
+            border-radius: 4px 4px 0 0;
+            min-height: 20px;
+            transition: background 0.2s;
+        }
+
+        .chart-bar:hover {
+            background: var(--blue);
+        }
+
+        /* TABLE */
+        .table-container {
+            background: var(--gray-900);
+            border: 1px solid var(--gray-800);
+            border-radius: 8px;
+            overflow: hidden;
+            margin-top: 1.5rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: var(--gray-800);
+            padding: 1rem;
+            text-align: left;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--gray-400);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid var(--gray-800);
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--gray-800);
+            font-size: 0.9rem;
+        }
+
+        tr:hover {
+            background: var(--gray-800);
+        }
+
+        /* BADGE */
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .badge-red {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--red);
+        }
+
+        .badge-green {
+            background: rgba(34, 197, 94, 0.1);
+            color: var(--green);
+        }
+
+        .badge-gray {
+            background: rgba(168, 168, 168, 0.1);
+            color: var(--gray-400);
+        }
+
+        /* BUTTON */
+        .btn {
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--gray-700);
+            background: transparent;
+            color: var(--white);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .btn:hover {
+            background: var(--gray-800);
+            border-color: var(--gray-600);
+        }
+
+        .btn-danger {
+            border-color: var(--red);
+            color: var(--red);
+        }
+
+        .btn-danger:hover {
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        .btn-sm {
+            padding: 0.35rem 0.75rem;
+            font-size: 0.85rem;
+        }
+
+        /* METRIC */
+        .metric {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--gray-800);
+        }
+
+        .metric:last-child {
+            border-bottom: none;
+        }
+
+        .metric-label {
+            color: var(--gray-500);
+            font-size: 0.9rem;
+        }
+
+        .metric-value {
+            color: var(--white);
+            font-weight: 600;
+        }
+
+        /* MODAL */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(4px);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--gray-900);
+            border: 1px solid var(--gray-800);
+            border-radius: 12px;
+            padding: 2rem;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--white);
+            margin-bottom: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--gray-500);
+            cursor: pointer;
+            font-size: 1.5rem;
+        }
+
+        .modal-close:hover {
+            color: var(--white);
+        }
+
+        .modal-section {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--gray-800);
+        }
+
+        .modal-section:last-child {
+            border-bottom: none;
+        }
+
+        .modal-section-title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--gray-400);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 1rem;
+        }
+
+        .modal-detail {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            font-size: 0.9rem;
+        }
+
+        .modal-detail-label {
+            color: var(--gray-500);
+        }
+
+        .modal-detail-value {
+            color: var(--white);
+            font-weight: 500;
+        }
+
+        /* ALERT BOX */
+        .alert {
+            background: var(--gray-900);
+            border: 1px solid;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .alert-danger {
+            border-color: var(--red);
+            background: rgba(239, 68, 68, 0.05);
+        }
+
+        .alert-success {
+            border-color: var(--green);
+            background: rgba(34, 197, 94, 0.05);
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 1200px) {
+            .grid-4 {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .grid-3 {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .grid-2, .grid-3, .grid-4 {
+                grid-template-columns: 1fr;
+            }
+
+            .page-title {
+                font-size: 1.75rem;
+            }
+
+            .nav-links {
+                gap: 1rem;
+                font-size: 0.9rem;
+            }
+
+            .stat-value {
+                font-size: 2rem;
+            }
+        }
+
+        /* SCROLLBAR */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--gray-900);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--gray-700);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--gray-600);
+        }
+
+        /* LOADING */
+        .loading {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            border: 2px solid var(--gray-700);
+            border-top-color: var(--white);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- NAVIGATION -->
+    <nav>
+        <div class="logo">SIZDS</div>
+        <ul class="nav-links">
+            <li><button class="active" onclick="switchPage('overview')">Overview</button></li>
+            <li><button onclick="switchPage('processes')">Processes</button></li>
+            <li><button onclick="switchPage('analytics')">Analytics</button></li>
+        </ul>
+        <div class="status-bar">
+            <div class="status-dot"></div>
+            <span>System Online</span>
+        </div>
+    </nav>
+
+    <!-- MAIN CONTAINER -->
+    <div class="container">
+        <!-- OVERVIEW PAGE -->
+        <div class="page active" id="overview">
+            <div class="page-header">
+                <h1 class="page-title">Threat Detection Overview</h1>
+                <p class="page-subtitle">Real-time monitoring with behavioral intent analysis</p>
+            </div>
+
+            <div class="grid grid-4">
+                <div class="stat-card">
+                    <div class="stat-label">Total Flows</div>
+                    <div class="stat-value" id="totalFlows">0</div>
+                    <div class="stat-change">↑ Network traffic</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Threats Detected</div>
+                    <div class="stat-value danger" id="threatsDetected">0</div>
+                    <div class="stat-change">Blocked</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Detection Rate</div>
+                    <div class="stat-value success" id="detectionRate">87%</div>
+                    <div class="stat-change">↑ 2.1% this week</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">System Health</div>
+                    <div class="stat-value" id="systemHealth">95%</div>
+                    <div class="stat-change">Optimal</div>
+                </div>
+            </div>
+
+            <!-- THREAT INTELLIGENCE SECTION -->
+            <h2 style="font-size: 1.5rem; color: var(--white); margin-top: 3rem; margin-bottom: 1.5rem; font-weight: 500;">Threat Intelligence</h2>
+
+            <div class="grid grid-2">
+                <div class="chart-container">
+                    <h3 style="font-size: 0.95rem; color: var(--gray-300); margin-bottom: 1.5rem; font-weight: 500;">Attack Intent Distribution (7 Classifiers)</h3>
+                    <div class="metric">
+                        <span class="metric-label">Exfiltration</span>
+                        <span class="metric-value danger" id="intent-exfil">0%</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Encryption/Ransomware</span>
+                        <span class="metric-value" id="intent-encrypt">0%</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Reconnaissance</span>
+                        <span class="metric-value" id="intent-recon">0%</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Lateral Movement</span>
+                        <span class="metric-value danger" id="intent-lateral">0%</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Denial/DDoS</span>
+                        <span class="metric-value" id="intent-denial">0%</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Persistence</span>
+                        <span class="metric-value danger" id="intent-persist">0%</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Exploitation</span>
+                        <span class="metric-value" id="intent-exploit">0%</span>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <h3 style="font-size: 0.95rem; color: var(--gray-300); margin-bottom: 1.5rem; font-weight: 500;">AI/ML Models Performance</h3>
+                    <div class="metric">
+                        <span class="metric-label">Ensemble Accuracy</span>
+                        <span class="metric-value success">97%</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">XGBoost</span>
+                        <span class="metric-value success">96%</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Neural Network</span>
+                        <span class="metric-value success">94%</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Isolation Forest</span>
+                        <span class="metric-value">85%</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">RF Intent Classifiers</span>
+                        <span class="metric-value success">91%</span>
+                    </div>
+                    <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--gray-800);">
+                        <div style="font-size: 0.85rem; color: var(--gray-500); margin-bottom: 0.5rem;">False Positive Rate</div>
+                        <div style="font-size: 1.75rem; font-weight: 600; color: var(--green);">2.3%</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RECENT THREATS -->
+            <h2 style="font-size: 1.5rem; color: var(--white); margin-top: 3rem; margin-bottom: 1.5rem; font-weight: 500;">Recent Threats</h2>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Threat Type</th>
+                            <th>Confidence</th>
+                            <th>Models Agree</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Exfiltration (Data Theft)</td>
+                            <td>87%</td>
+                            <td>4/8 models</td>
+                            <td><span class="badge badge-red">Blocked</span></td>
+                            <td><button class="btn btn-sm" onclick="viewThreat('exfil')">Details</button></td>
+                        </tr>
+                        <tr>
+                            <td>Encryption (Ransomware)</td>
+                            <td>92%</td>
+                            <td>6/8 models</td>
+                            <td><span class="badge badge-red">Blocked</span></td>
+                            <td><button class="btn btn-sm" onclick="viewThreat('encrypt')">Details</button></td>
+                        </tr>
+                        <tr>
+                            <td>Reconnaissance (Scanning)</td>
+                            <td>78%</td>
+                            <td>3/8 models</td>
+                            <td><span class="badge badge-gray">Monitoring</span></td>
+                            <td><button class="btn btn-sm" onclick="viewThreat('recon')">Details</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- PROCESSES PAGE -->
+        <div class="page" id="processes">
+            <div class="page-header">
+                <h1 class="page-title">Process Isolation</h1>
+                <p class="page-subtitle">Monitor and isolate suspicious processes</p>
+            </div>
+
+            <div class="alert alert-danger">
+                <strong>⚠️ Critical:</strong> 2 processes detected with malicious intent. Isolation recommended immediately.
+            </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Process Name</th>
+                            <th>PID</th>
+                            <th>CPU</th>
+                            <th>Memory</th>
+                            <th>Risk Level</th>
+                            <th>Intent Detected</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="processesTable">
+                        <tr>
+                            <td><strong>ransomware.exe</strong></td>
+                            <td>5892</td>
+                            <td>45%</td>
+                            <td>1024 MB</td>
+                            <td><span class="badge badge-red">Critical</span></td>
+                            <td>Encryption Intent (92%)</td>
+                            <td><button class="btn btn-danger btn-sm" onclick="isolateProcess('ransomware.exe', 5892)">Isolate Now</button></td>
+                        </tr>
+                        <tr>
+                            <td><strong>malware.exe</strong></td>
+                            <td>7234</td>
+                            <td>28%</td>
+                            <td>756 MB</td>
+                            <td><span class="badge badge-red">Critical</span></td>
+                            <td>Exfiltration Intent (87%)</td>
+                            <td><button class="btn btn-danger btn-sm" onclick="isolateProcess('malware.exe', 7234)">Isolate Now</button></td>
+                        </tr>
+                        <tr>
+                            <td>chrome.exe</td>
+                            <td>4521</td>
+                            <td>12%</td>
+                            <td>548 MB</td>
+                            <td><span class="badge badge-gray">Low</span></td>
+                            <td>Normal Behavior</td>
+                            <td><button class="btn btn-sm" onclick="viewProcess('chrome.exe')">Details</button></td>
+                        </tr>
+                        <tr>
+                            <td>python.exe</td>
+                            <td>3245</td>
+                            <td>8%</td>
+                            <td>234 MB</td>
+                            <td><span class="badge badge-gray">Low</span></td>
+                            <td>Normal Behavior</td>
+                            <td><button class="btn btn-sm" onclick="viewProcess('python.exe')">Details</button></td>
+                        </tr>
+                        <tr>
+                            <td>svchost.exe</td>
+                            <td>2156</td>
+                            <td>5%</td>
+                            <td>64 MB</td>
+                            <td><span class="badge badge-gray">Low</span></td>
+                            <td>System Process</td>
+                            <td><button class="btn btn-sm" onclick="viewProcess('svchost.exe')">Details</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h2 style="font-size: 1.5rem; color: var(--white); margin-top: 3rem; margin-bottom: 1.5rem; font-weight: 500;">System Resources</h2>
+
+            <div class="grid grid-2">
+                <div class="chart-container">
+                    <h3 style="font-size: 0.95rem; color: var(--gray-300); margin-bottom: 1.5rem; font-weight: 500;">CPU & Memory Usage</h3>
+                    <div class="metric">
+                        <span class="metric-label">Total CPU Usage</span>
+                        <span class="metric-value">32%</span>
+                    </div>
+                    <div style="height: 8px; background: var(--gray-800); border-radius: 4px; margin-top: 0.5rem;">
+                        <div style="height: 100%; width: 32%; background: var(--blue); border-radius: 4px;"></div>
+                    </div>
+                    
+                    <div class="metric" style="margin-top: 1rem;">
+                        <span class="metric-label">Total Memory Usage</span>
+                        <span class="metric-value">64%</span>
+                    </div>
+                    <div style="height: 8px; background: var(--gray-800); border-radius: 4px; margin-top: 0.5rem;">
+                        <div style="height: 100%; width: 64%; background: var(--red); border-radius: 4px;"></div>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <h3 style="font-size: 0.95rem; color: var(--gray-300); margin-bottom: 1.5rem; font-weight: 500;">Process Distribution</h3>
+                    <div class="metric">
+                        <span class="metric-label">Normal Processes</span>
+                        <span class="metric-value success">3</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Suspicious Processes</span>
+                        <span class="metric-value danger">2</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Critical Threats</span>
+                        <span class="metric-value danger">2</span>
+                    </div>
+                    <div class="metric" style="border-bottom: none;">
+                        <span class="metric-label">Total Running</span>
+                        <span class="metric-value">5</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ANALYTICS PAGE -->
+        <div class="page" id="analytics">
+            <div class="page-header">
+                <h1 class="page-title">Analytics & Intelligence</h1>
+                <p class="page-subtitle">Detailed threat analysis and detection insights</p>
+            </div>
+
+            <h2 style="font-size: 1.5rem; color: var(--white); margin-bottom: 1.5rem; font-weight: 500;">Key Metrics</h2>
+
+            <div class="grid grid-3">
+                <div class="stat-card">
+                    <div class="stat-label">Detection Rate</div>
+                    <div class="stat-value success">87.3%</div>
+                    <div class="stat-change">↑ 2.1% vs last week</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">False Positive Rate</div>
+                    <div class="stat-value success">2.3%</div>
+                    <div class="stat-change">↓ 0.8% vs last week</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Response Time</div>
+                    <div class="stat-value">34ms</div>
+                    <div class="stat-change">↓ 5ms improvement</div>
+                </div>
+            </div>
+
+            <h2 style="font-size: 1.5rem; color: var(--white); margin-top: 3rem; margin-bottom: 1.5rem; font-weight: 500;">Detection Trends (30 Days)</h2>
+
+            <div class="chart-container">
+                <div class="chart">
+                    <div class="chart-bar" style="height: 40%;"></div>
+                    <div class="chart-bar" style="height: 55%;"></div>
+                    <div class="chart-bar" style="height: 45%;"></div>
+                    <div class="chart-bar" style="height: 70%;"></div>
+                    <div class="chart-bar" style="height: 60%;"></div>
+                    <div class="chart-bar" style="height: 75%;"></div>
+                    <div class="chart-bar" style="height: 65%;"></div>
+                    <div class="chart-bar" style="height: 80%;"></div>
+                    <div class="chart-bar" style="height: 55%;"></div>
+                    <div class="chart-bar" style="height: 70%;"></div>
+                </div>
+            </div>
+
+            <h2 style="font-size: 1.5rem; color: var(--white); margin-top: 3rem; margin-bottom: 1.5rem; font-weight: 500;">Threat Analysis</h2>
+
+            <div class="grid grid-2">
+                <div class="chart-container">
+                    <h3 style="font-size: 0.95rem; color: var(--gray-300); margin-bottom: 1.5rem; font-weight: 500;">Top Attack Types</h3>
+                    <div class="metric">
+                        <span class="metric-label">Exfiltration</span>
+                        <span class="metric-value">34%</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Encryption</span>
+                        <span class="metric-value">28%</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Reconnaissance</span>
+                        <span class="metric-value">19%</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Lateral Movement</span>
+                        <span class="metric-value">12%</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Other</span>
+                        <span class="metric-value">7%</span>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <h3 style="font-size: 0.95rem; color: var(--gray-300); margin-bottom: 1.5rem; font-weight: 500;">Model Accuracy Comparison</h3>
+                    <div class="metric">
+                        <span class="metric-label">Ensemble</span>
+                        <span class="metric-value success">97%</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">XGBoost</span>
+                        <span class="metric-value success">96%</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Neural Network</span>
+                        <span class="metric-value success">94%</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">RF Classifiers</span>
+                        <span class="metric-value success">91%</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Isolation Forest</span>
+                        <span class="metric-value">85%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODALS -->
+    <div class="modal" id="threatModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span id="threatModalTitle">Threat Details</span>
+                <button class="modal-close" onclick="closeModal('threatModal')">×</button>
+            </div>
+            <div id="threatModalBody"></div>
+        </div>
+    </div>
+
+    <div class="modal" id="processModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span id="processModalTitle">Process Details</span>
+                <button class="modal-close" onclick="closeModal('processModal')">×</button>
+            </div>
+            <div id="processModalBody"></div>
+        </div>
+    </div>
+
+    <div class="modal" id="isolateModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span>Isolate Process</span>
+                <button class="modal-close" onclick="closeModal('isolateModal')">×</button>
+            </div>
+            <div class="modal-section">
+                <div class="modal-section-title">Confirmation Required</div>
+                <p style="color: var(--gray-300); margin-bottom: 1.5rem;">
+                    You are about to isolate a process from the network. This will terminate all network connections and prevent data exfiltration.
+                </p>
+            </div>
+            <div style="display: flex; gap: 1rem;">
+                <button class="btn" onclick="closeModal('isolateModal')">Cancel</button>
+                <button class="btn btn-danger" onclick="confirmIsolate()">Confirm Isolation</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
